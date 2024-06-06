@@ -70,3 +70,16 @@ def update_character(character_id: int, character: CharacterUpdate,
     db.refresh(db_character)
 
     return db_character
+
+
+@router.delete("/characters/{character_id}", response_model=dict)
+def delete_character(character_id: int, db: Session = Depends(get_db)):
+    db_character = db.query(Character).filter(
+        Character.id == character_id).first()
+
+    ValidatorCharacter.validate_not_character(character=db_character)
+
+    db.delete(db_character)
+    db.commit()
+
+    return {"message": "Character deleted successfully"}
