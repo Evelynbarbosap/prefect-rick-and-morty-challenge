@@ -2,7 +2,7 @@ import json
 
 from db.database import get_db
 from fastapi import Depends, APIRouter
-from models import Character
+from models.characters import Character
 from schemas.character import CharacterCreate
 from sqlalchemy.orm import Session
 from validators.characters.validator import ValidatorCharacter

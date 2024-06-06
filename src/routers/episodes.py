@@ -2,7 +2,7 @@ import json
 
 from db.database import get_db
 from fastapi import APIRouter, Depends
-from models import Episode
+from models.episodes import Episode
 from schemas.episode import EpisodeCreate
 from sqlalchemy.orm import Session
 from validators.episodes.validator import ValidatorEpisode
