@@ -4,6 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
+
 class Character(Base):
     __tablename__ = "characters"
     id = Column(Integer, primary_key=True, index=True)
@@ -23,7 +24,7 @@ class Character(Base):
         self.episode = json.dumps(episode)
 
     def get_episode(self):
-        return json.loads(self.episode) if self.episode else []  
+        return json.loads(self.episode) if self.episode else []
 
 
 class Episode(Base):
@@ -40,4 +41,4 @@ class Episode(Base):
         self.characters = json.dumps(characters)
 
     def get_characters(self):
-        return json.loads(self.characters) if self.characters else []  
+        return json.loads(self.characters) if self.characters else []
