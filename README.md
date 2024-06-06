@@ -22,3 +22,22 @@ https://developers.thecatapi.com/
 https://rickandmortyapi.com
 https://deckofcardsapi.com
 https://publicapis.dev
+
+
+
+Para executar o projeto:
+
+1- Instale a venv:
+ - python -m venv venv 
+ - source venv/bin/activate  # No Windows: venv\Scripts\activate 
+ - pip install -r requirements.txt
+
+2- Entre no diretório src e execute:
+ - python main.py
+ - uvicorn api:app --reload (irá disponibilizar um link para as endpoints, 
+adicione "\docs" no final da url no seu navegador)
+ - Tema escolhido: https://rickandmortyapi.com/ 
+ - API escolhida: {
+  "characters": "https://rickandmortyapi.com/api/character",
+  "episodes": "https://rickandmortyapi.com/api/episode"
+}
