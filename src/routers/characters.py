@@ -3,7 +3,7 @@ import json
 from db.database import get_db
 from fastapi import Depends, APIRouter
 from models.characters import Character
-from schemas.character import CharacterCreate
+from schemas.character import CharacterCreate, CharacterUpdate
 from sqlalchemy.orm import Session
 from validators.characters.validator import ValidatorCharacter
 
@@ -50,3 +50,23 @@ def get_characters(db: Session = Depends(get_db)):
     characters = db.query(Character).all()
 
     return characters
+
+
+@router.put("/characters/{character_id}")
+def update_character(character_id: int, character: CharacterUpdate,
+                     db: Session = Depends(get_db)):
+    db_character = db.query(Character).filter(
+        Character.id == character_id).first()
+
+    ValidatorCharacter.validate_not_character(character=character)
+
+    for key, value in character.dict(exclude_unset=True).items():
+        if key == 'episode':
+            db_character.set_episode(value)
+        else:
+            setattr(db_character, key, value)
+
+    db.commit()
+    db.refresh(db_character)
+
+    return db_character
