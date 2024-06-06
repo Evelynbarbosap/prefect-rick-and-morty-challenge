@@ -1,12 +1,14 @@
 import json
 
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 
 from db.database import get_db
 from models import Character, Episode
 from schemas.character import CharacterCreate
 from schemas.episode import EpisodeCreate
+from validators.characters.validator import ValidatorCharacter
+from validators.episodes.validator import ValidatorEpisode
 
 app = FastAPI()
 
@@ -15,7 +17,6 @@ app = FastAPI()
 def create_character(character_data: CharacterCreate,
                      db: Session = Depends(get_db)):
     character = Character(
-        id=character_data.id,
         name=character_data.name,
         status=character_data.status,
         species=character_data.species,
@@ -42,15 +43,14 @@ def create_character(character_data: CharacterCreate,
 @app.get("/characters/{character_id}")
 def read_character(character_id: int, db: Session = Depends(get_db)):
     character = db.query(Character).filter(Character.id == character_id).first()
-    if character is None:
-        raise HTTPException(status_code=404, detail="Character not found")
+    ValidatorCharacter.validate_not_character(character=character)
+
     return character
 
 
 @app.post("/episodes/")
 def create_episode(episode_data: EpisodeCreate, db: Session = Depends(get_db)):
     episode = Episode(
-        id=episode_data.id,
         name=episode_data.name,
         air_date=episode_data.air_date,
         episode=episode_data.episode,
@@ -69,6 +69,6 @@ def create_episode(episode_data: EpisodeCreate, db: Session = Depends(get_db)):
 @app.get("/episodes/{episode_id}")
 def read_episode(episode_id: int, db: Session = Depends(get_db)):
     episode = db.query(Episode).filter(Episode.id == episode_id).first()
-    if episode is None:
-        raise HTTPException(status_code=404, detail="Episode not found")
+    ValidatorEpisode.validate_not_episode(episode=episode)
+
     return episode

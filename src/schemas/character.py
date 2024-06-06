@@ -2,7 +2,6 @@ from pydantic import BaseModel, Field
 
 
 class CharacterCreate(BaseModel):
-    id: int = Field(..., title="ID")
     name: str = Field(..., title="Name")
     status: str = Field(..., title="Status")
     species: str = Field(..., title="Species")
@@ -18,7 +17,6 @@ class CharacterCreate(BaseModel):
     class Config:
         schema_extra = {
                 "example": {
-                    "id": 476,
                     "name": "Flower Morty",
                     "status": "Alive",
                     "species": "Human",
