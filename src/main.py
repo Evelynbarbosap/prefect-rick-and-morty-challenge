@@ -1,13 +1,16 @@
+import json
+from datetime import timedelta
 from prefect import task, Flow
 import requests
 import logging
 from sqlalchemy.orm import sessionmaker
-from database import engine
+from models import Character, Episode
+from src.db.database import engine
 
 
 URL_API = "https://rickandmortyapi.com/api"
 
-@task(max_retries=3, retry_delay_seconds=5)
+@task(max_retries=3, retry_delay=timedelta(seconds=5))
 def get_rick_and_morty_characters():
     """
         Retorna todos os personagens. 
@@ -26,7 +29,7 @@ def get_rick_and_morty_characters():
         raise
 
 
-@task(max_retries=3, retry_delay_seconds=5)
+@task(max_retries=3, retry_delay=timedelta(seconds=5))
 def get_rick_and_morty_episodes():
     """
         Retorna todos os epsódios. 
@@ -52,11 +55,32 @@ def save_data(characters, episodes):
     Session = sessionmaker(bind=engine)
     session = Session()
     for character in characters['results']:
-        db_character = Character(id=character['id'], data=character)
+        db_character = Character(
+            id=character['id'], 
+            name=character['name'], 
+            status=character['status'],
+            species=character['species'],
+            type=character['type'],
+            gender=character['gender'],
+            origin=character['origin'],
+            location=character['location'],
+            image=character['image'],
+            episode=json.dumps(character['episode']),
+            url=character['url'],
+            created=character['created']
+        )
         session.merge(db_character)
     
     for episode in episodes['results']:
-        db_episode = Episode(id=episode['id'], data=episode)
+        db_episode = Episode(
+            id=episode['id'], 
+            name=episode['name'], 
+            air_date=episode['air_date'], 
+            episode=episode['episode'], 
+            characters=json.dumps(episode['characters']), 
+            url=episode['url'], 
+            created=episode['created']
+        )
         session.merge(db_episode)
         
     session.commit()
@@ -66,6 +90,7 @@ def save_data(characters, episodes):
 with Flow("Rick and Morty Data Pipeline") as flow:
     characters = get_rick_and_morty_characters()
     episodes = get_rick_and_morty_episodes()
+
     save_data(characters, episodes)
 
 if __name__ == "__main__":

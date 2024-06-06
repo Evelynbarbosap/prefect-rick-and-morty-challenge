@@ -1,8 +1,24 @@
 import json
-from sqlalchemy import Column, Integer, Text, String, JSON
+
+from sqlalchemy import create_engine, Column, Integer, Text, String, JSON
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+
+DATABASE_URL = "sqlite:///rickandmorty.db"
+
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
+
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
 
 class Character(Base):
     __tablename__ = "characters"
@@ -23,7 +39,7 @@ class Character(Base):
         self.episode = json.dumps(episode)
 
     def get_episode(self):
-        return json.loads(self.episode) if self.episode else []  
+        return json.loads(self.episode) if self.episode else []
 
 
 class Episode(Base):
@@ -40,4 +56,8 @@ class Episode(Base):
         self.characters = json.dumps(characters)
 
     def get_characters(self):
-        return json.loads(self.characters) if self.characters else []  
+        return json.loads(self.characters) if self.characters else []
+
+
+# Cria as tabelas no banco de dados
+Base.metadata.create_all(bind=engine)
