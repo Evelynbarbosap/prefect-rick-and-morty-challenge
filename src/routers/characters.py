@@ -43,3 +43,10 @@ def read_character(character_id: int, db: Session = Depends(get_db)):
     ValidatorCharacter.validate_not_character(character=character)
 
     return character
+
+
+@router.get("/characters")
+def get_characters(db: Session = Depends(get_db)):
+    characters = db.query(Character).all()
+
+    return characters
