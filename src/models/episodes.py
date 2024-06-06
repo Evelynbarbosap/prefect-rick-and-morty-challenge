@@ -16,8 +16,8 @@ class Episode(Base):
     url = Column(String)
     created = Column(String)
 
-    def set_characters(self, characters):
+    def set_episode(self, characters):
         self.characters = json.dumps(characters)
 
-    def get_characters(self):
+    def get_episode(self):
         return json.loads(self.characters) if self.characters else []
